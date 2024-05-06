@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:navigation_experimental/routes/transition.dart';
 import 'package:navigation_experimental/screens/details_screen.dart';
 import 'package:navigation_experimental/screens/home_screen.dart';
 
@@ -15,18 +16,27 @@ final router = GoRouter(
       path: '/home',
       builder: (context, state) => const HomeScreen(),
       routes: [
+        // MaterialPage(child: child)
         GoRoute(
           path: 'details/:id',
           name: detailsScreenRoute,
-          pageBuilder: (context, state) => MyTransitionPage(
-            backRouteName: '/home',
-            transitionDuration: const Duration(milliseconds: 200),
+          pageBuilder: (context, state) => MyMaterialPage(
+            backRouteName: homeScreenRoute,
             child: DetailsScreen(
               id: int.parse(state.pathParameters['id']!),
               isChatOpened: state.uri.queryParameters.containsKey('chat'),
               messageId: state.uri.queryParameters['messageId'],
             ),
           ),
+          // pageBuilder: (context, state) => MyTransitionPage(
+          //   backRouteName: '/home',
+          //   transitionDuration: const Duration(milliseconds: 200),
+          // child: DetailsScreen(
+          //   id: int.parse(state.pathParameters['id']!),
+          //   isChatOpened: state.uri.queryParameters.containsKey('chat'),
+          //   messageId: state.uri.queryParameters['messageId'],
+          // ),
+          // ),
           // pageBuilder: (context, state) => CustomTransitionPage<void>(
           //   key: state.pageKey,
           //   opaque: false,
@@ -143,3 +153,59 @@ class MyTransitionPage<T> extends CustomTransitionPage<T> {
     );
   }
 }
+
+// class MyMaterialPage<T> extends MaterialPage<T> with MaterialRouteTransitionMixin<T> {
+//   final String backRouteName;
+
+//   MyMaterialPage({
+//     required Widget child,
+//     required this.backRouteName,
+//     Duration? transitionDuration,
+//     Duration? reverseTransitionDuration,
+//     String? name,
+//     Object? arguments,
+//     String? restorationId,
+//     LocalKey? key,
+//   }) : super(
+//     child: child,
+//     transitionDuration: transitionDuration ?? const Duration(milliseconds: 300),
+//     reverseTransitionDuration: reverseTransitionDuration ?? const Duration(milliseconds: 300),
+//     name: name,
+//     arguments: arguments,
+//     restorationId: restorationId,
+//     key: key,
+//   );
+
+//   @override
+//   Widget buildContent(BuildContext context) {
+//     return child;
+//   }
+
+//   @override
+//   Route<T> createRoute(BuildContext context) {
+//     return PageRouteBuilder<T>(
+//       settings: this,
+//       pageBuilder: (context, animation, secondaryAnimation) => buildContent(context),
+//       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+//         return _transitionsBuilder(context, animation, secondaryAnimation, child, backRouteName);
+//       },
+//       transitionDuration: transitionDuration,
+//       reverseTransitionDuration: reverseTransitionDuration,
+//     );
+//   }
+
+//   static Widget _transitionsBuilder(
+//     BuildContext context,
+//     Animation<double> animation,
+//     Animation<double> secondaryAnimation,
+//     Widget child,
+//     String backRouteName,
+//   ) {
+//     final slideAnimation = Tween<Offset>(
+//       begin: const Offset(1, 0.0),
+//       end: const Offset(0, 0.0),
+//     ).animate(animation);
+
+//   }
+
+// }
