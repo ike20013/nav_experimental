@@ -35,10 +35,8 @@ class MyMaterialPage<T> extends Page<T> {
 
   @override
   Route<T> createRoute(BuildContext context) {
-    // return _MyPageBasedMaterialPageRoute(
-    //               page: this, allowSnapshotting: allowSnapshotting);
-
-      return CupertinoPageRoute(builder: (context) => child, settings: this);
+    return _MyPageBasedMaterialPageRoute(
+                  page: this, allowSnapshotting: allowSnapshotting);
     // return PageRouteBuilder<T>(
     //   settings: this,
     //   opaque: false,
@@ -98,9 +96,11 @@ class MyMaterialPage<T> extends Page<T> {
 }
 
 class _MyPageBasedMaterialPageRoute<T> extends PageRoute<T>
-    with MaterialRouteTransitionMixin<T> {
-  _MyPageBasedMaterialPageRoute({
+     {
+  _MyPageBasedMaterialPageRoute( {
     required MyMaterialPage<T> page,
+    this.barrierColor,
+    this.transitionDuration = const Duration(milliseconds: 300),
     super.allowSnapshotting,
   }) : super(settings: page) {
     assert(opaque);
@@ -109,8 +109,77 @@ class _MyPageBasedMaterialPageRoute<T> extends PageRoute<T>
   MyMaterialPage<T> get _page => settings as MyMaterialPage<T>;
 
   @override
-  Widget buildContent(BuildContext context) {
+  final Color? barrierColor;
+
+  @override
+  final Duration transitionDuration;
+
+  // @override
+  // Widget buildContent(BuildContext context) {
+  //   final slideAnimation = Tween<Offset>(
+  //     begin: const Offset(1, 0.0),
+  //     end: const Offset(0, 0.0),
+  //   ).animate(animation);
+
+  //   return Stack(
+  //     children: <Widget>[
+  //       GestureDetector(
+  //         behavior: HitTestBehavior.translucent,
+  //         onTapUp: (_) => context.goNamed(backRouteName),
+  //         child: FadeTransition(
+  //           opacity: Tween<double>(begin: 0.0, end: 1).animate(animation),
+  //           child: Container(
+  //             color: Colors.black.withOpacity(0.5),
+  //             constraints: const BoxConstraints.expand(),
+  //           ),
+  //         ),
+  //       ),
+  //       Align(
+  //         alignment: Alignment.centerRight,
+  //         child: SlideTransition(
+  //           position: slideAnimation,
+  //           child: _page.child,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  //   return _page.child;
+  // }
+
+  @override
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     return _page.child;
+  }
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+    final slideAnimation = Tween<Offset>(
+      begin: const Offset(1, 0.0),
+      end: const Offset(0, 0.0),
+    ).animate(animation);
+
+    return Stack(
+      children: <Widget>[
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTapUp: (_) => context.goNamed('home'),
+          child: FadeTransition(
+            opacity: Tween<double>(begin: 0.0, end: 1).animate(animation),
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              constraints: const BoxConstraints.expand(),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: SlideTransition(
+            position: slideAnimation,
+            child: _page.child,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -121,4 +190,8 @@ class _MyPageBasedMaterialPageRoute<T> extends PageRoute<T>
 
   @override
   String get debugLabel => '${super.debugLabel}(${_page.name})';
+  
+  @override
+  // TODO: implement barrierLabel
+  String? get barrierLabel => throw UnimplementedError();
 }

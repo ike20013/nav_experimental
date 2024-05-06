@@ -21,7 +21,8 @@ final router = GoRouter(
         GoRoute(
           path: 'details/:id',
           name: detailsScreenRoute,
-          pageBuilder: (context, state) => CustomCupertinoPage(
+          pageBuilder: (context, state) => MyMaterialPage(
+            backRouteName: '123',
             child: DetailsScreen(
               id: int.parse(state.pathParameters['id']!),
               isChatOpened: state.uri.queryParameters.containsKey('chat'),
@@ -92,7 +93,6 @@ final router = GoRouter(
     ),
   ],
 );
-
 class MyTransitionPage<T> extends CustomTransitionPage<T> {
   final String backRouteName;
 
