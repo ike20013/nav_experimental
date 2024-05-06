@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -33,20 +35,24 @@ class MyMaterialPage<T> extends Page<T> {
 
   @override
   Route<T> createRoute(BuildContext context) {
-    return PageRouteBuilder<T>(
-      settings: this,
-      opaque: false,
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          _MyPageBasedMaterialPageRoute(
-                  page: this, allowSnapshotting: allowSnapshotting)
-              .buildContent(context),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return _transitionsBuilder(
-            context, animation, secondaryAnimation, child, backRouteName);
-      },
-      transitionDuration: transitionDuration,
-      // reverseTransitionDuration: reverseTransitionDuration,
-    );
+    // return _MyPageBasedMaterialPageRoute(
+    //               page: this, allowSnapshotting: allowSnapshotting);
+
+      return CupertinoPageRoute(builder: (context) => child, settings: this);
+    // return PageRouteBuilder<T>(
+    //   settings: this,
+    //   opaque: false,
+    //   pageBuilder: (context, animation, secondaryAnimation) =>
+    //       _MyPageBasedMaterialPageRoute(
+    //               page: this, allowSnapshotting: allowSnapshotting)
+    //           .buildContent(context),
+    //   transitionsBuilder: (context, animation, secondaryAnimation, child) {
+    //     return _transitionsBuilder(
+    //         context, animation, secondaryAnimation, child, backRouteName);
+    //   },
+    //   transitionDuration: transitionDuration,
+    //   // reverseTransitionDuration: reverseTransitionDuration,
+    // );
   }
 
   static Widget _transitionsBuilder(
