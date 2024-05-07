@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:navigation_experimental/screens/details/mobile_details.dart';
 import 'package:navigation_experimental/screens/details/web_details.dart';
 
@@ -26,7 +25,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerRight,
-      child: MediaQuery.of(context).size.width >= 500
+      child: MediaQuery.of(context).size.width >= 900
           ? WebDetails(
               id: widget.id,
               isChatOpened: widget.isChatOpened,

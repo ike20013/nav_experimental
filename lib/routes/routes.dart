@@ -1,5 +1,6 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigation_experimental/routes/transition.dart';
 import 'package:navigation_experimental/screens/details_screen.dart';
@@ -19,6 +20,11 @@ final router = GoRouter(
         GoRoute(
           path: 'details/:id',
           name: detailsScreenRoute,
+          onExit: (context, state) async {
+            log('dreamly popped');
+
+            return true;
+          },
           pageBuilder: (context, state) => MyMaterialPage(
             // backRouteName: '/home',
             // transitionDuration: const Duration(milliseconds: 200),

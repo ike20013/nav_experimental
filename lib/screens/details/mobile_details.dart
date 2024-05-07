@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class MobileDetails extends StatefulWidget {
   final int id;
@@ -76,16 +75,15 @@ class _MobileDetailsState extends State<MobileDetails> {
             Text('Curr id is ${widget.id}'),
             ElevatedButton(
               onPressed: () => context.go('/home/details/500?chat'),
-              child: Text('Open chat'),
+              child: const Text('Open chat'),
             ),
             ElevatedButton(
               onPressed: () => context.go('/home/details/500'),
-              child: Text('Close chat'),
+              child: const Text('Close chat'),
             ),
             ElevatedButton(
-              onPressed: () =>
-                  context.go('/home/details/500?chat&messageId=123123123'),
-              child: Text('Open Message'),
+              onPressed: () => context.go('/home/details/500?chat&messageId=123123123'),
+              child: const Text('Open Message'),
             )
           ],
         ),

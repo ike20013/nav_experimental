@@ -29,8 +29,7 @@ class MyMaterialPage<T> extends Page<T> {
 
   @override
   Route<T> createRoute(BuildContext context) {
-    return _MyPageBasedMaterialPageRoute<T>(
-        page: this, allowSnapshotting: allowSnapshotting);
+    return _MyPageBasedMaterialPageRoute<T>(page: this, allowSnapshotting: allowSnapshotting);
   }
 }
 
@@ -38,14 +37,11 @@ class MyMaterialPage<T> extends Page<T> {
 //
 // This route uses the builder from the page to build its content. This ensures
 // the content is up to date after page updates.
-class _MyPageBasedMaterialPageRoute<T> extends PageRoute<T>
-    with MyMaterialRouteTransitionMixin<T> {
+class _MyPageBasedMaterialPageRoute<T> extends PageRoute<T> with MyMaterialRouteTransitionMixin<T> {
   _MyPageBasedMaterialPageRoute({
     required MyMaterialPage<T> page,
     super.allowSnapshotting,
-  }) : super(settings: page) {
-    assert(opaque);
-  }
+  }) : super(settings: page);
 
   MyMaterialPage<T> get _page => settings as MyMaterialPage<T>;
 
@@ -79,12 +75,13 @@ mixin MyMaterialRouteTransitionMixin<T> on PageRoute<T> {
   String? get barrierLabel => null;
 
   @override
+  bool get opaque => false;
+
+  @override
   bool canTransitionTo(TransitionRoute<dynamic> nextRoute) {
     // Don't perform outgoing animation if the next route is a fullscreen dialog.
-    return (nextRoute is MaterialRouteTransitionMixin &&
-            !nextRoute.fullscreenDialog) ||
-        (nextRoute is CupertinoRouteTransitionMixin &&
-            !nextRoute.fullscreenDialog);
+    return (nextRoute is MaterialRouteTransitionMixin && !nextRoute.fullscreenDialog) ||
+        (nextRoute is CupertinoRouteTransitionMixin && !nextRoute.fullscreenDialog);
   }
 
   @override
@@ -109,7 +106,7 @@ mixin MyMaterialRouteTransitionMixin<T> on PageRoute<T> {
       end: const Offset(0, 0.0),
     ).animate(animation);
 
-    if(MediaQuery.sizeOf(context).width >= 500) {
+    if (MediaQuery.sizeOf(context).width >= 900) {
       return Stack(
         children: <Widget>[
           GestureDetector(
@@ -133,8 +130,6 @@ mixin MyMaterialRouteTransitionMixin<T> on PageRoute<T> {
         ],
       );
     }
-
-    
 
     final PageTransitionsTheme theme = Theme.of(context).pageTransitionsTheme;
     return theme.buildTransitions<T>(this, context, animation, secondaryAnimation, child);
