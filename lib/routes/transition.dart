@@ -29,7 +29,8 @@ class MyMaterialPage<T> extends Page<T> {
 
   @override
   Route<T> createRoute(BuildContext context) {
-    return _MyPageBasedMaterialPageRoute<T>(page: this, allowSnapshotting: allowSnapshotting);
+    return _MyPageBasedMaterialPageRoute<T>(
+        page: this, allowSnapshotting: allowSnapshotting);
   }
 }
 
@@ -37,7 +38,8 @@ class MyMaterialPage<T> extends Page<T> {
 //
 // This route uses the builder from the page to build its content. This ensures
 // the content is up to date after page updates.
-class _MyPageBasedMaterialPageRoute<T> extends PageRoute<T> with MyMaterialRouteTransitionMixin<T> {
+class _MyPageBasedMaterialPageRoute<T> extends PageRoute<T>
+    with MyMaterialRouteTransitionMixin<T> {
   _MyPageBasedMaterialPageRoute({
     required MyMaterialPage<T> page,
     super.allowSnapshotting,
@@ -79,8 +81,10 @@ mixin MyMaterialRouteTransitionMixin<T> on PageRoute<T> {
   @override
   bool canTransitionTo(TransitionRoute<dynamic> nextRoute) {
     // Don't perform outgoing animation if the next route is a fullscreen dialog.
-    return (nextRoute is MaterialRouteTransitionMixin && !nextRoute.fullscreenDialog)
-      || (nextRoute is CupertinoRouteTransitionMixin && !nextRoute.fullscreenDialog);
+    return (nextRoute is MaterialRouteTransitionMixin &&
+            !nextRoute.fullscreenDialog) ||
+        (nextRoute is CupertinoRouteTransitionMixin &&
+            !nextRoute.fullscreenDialog);
   }
 
   @override
@@ -98,36 +102,41 @@ mixin MyMaterialRouteTransitionMixin<T> on PageRoute<T> {
   }
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
     final slideAnimation = Tween<Offset>(
       begin: const Offset(1, 0.0),
       end: const Offset(0, 0.0),
     ).animate(animation);
 
-    return Stack(
-      children: <Widget>[
-        GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTapUp: (_) => context.goNamed('home'),
-          child: FadeTransition(
-            opacity: Tween<double>(begin: 0.0, end: 1).animate(animation),
-            child: Container(
-              color: Colors.black.withOpacity(0.5),
-              constraints: const BoxConstraints.expand(),
+    if(MediaQuery.sizeOf(context).width >= 500) {
+      return Stack(
+        children: <Widget>[
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTapUp: (_) => context.goNamed('home'),
+            child: FadeTransition(
+              opacity: Tween<double>(begin: 0.0, end: 1).animate(animation),
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+                constraints: const BoxConstraints.expand(),
+              ),
             ),
           ),
-        ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: SlideTransition(
-            position: slideAnimation,
-            child: child,
+          Align(
+            alignment: Alignment.centerRight,
+            child: SlideTransition(
+              position: slideAnimation,
+              child: child,
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
 
-    // final PageTransitionsTheme theme = Theme.of(context).pageTransitionsTheme;
-    // return theme.buildTransitions<T>(this, context, animation, secondaryAnimation, child);
+    
+
+    final PageTransitionsTheme theme = Theme.of(context).pageTransitionsTheme;
+    return theme.buildTransitions<T>(this, context, animation, secondaryAnimation, child);
   }
 }
