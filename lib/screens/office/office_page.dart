@@ -19,6 +19,9 @@ class OfficePage extends StatelessWidget {
       child: Builder(
         builder: (context) {
           final tabController = DefaultTabController.of(context);
+
+          tabController.index = officeNavigationShell.currentIndex;
+
           tabController.addListener(() {
             if (tabController.indexIsChanging) {
               officeNavigationShell.goBranch(
@@ -33,6 +36,7 @@ class OfficePage extends StatelessWidget {
             appBar: AppBar(
               automaticallyImplyLeading: false,
               bottom: TabBar(
+                controller: tabController,
                 tabs: [
                   Icon(Icons.abc),
                   Icon(Icons.ac_unit),
