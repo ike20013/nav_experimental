@@ -2,12 +2,159 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:navigation_experimental/main_page.dart';
 import 'package:navigation_experimental/routes/transition.dart';
-import 'package:navigation_experimental/screens/details_screen.dart';
+import 'package:navigation_experimental/screens/details/details_screen.dart';
+// import 'package:navigation_experimental/screens/details_screen.dart';
 import 'package:navigation_experimental/screens/home_screen.dart';
+import 'package:navigation_experimental/screens/library/library/library.dart';
+import 'package:navigation_experimental/screens/library/library_details/library_details.dart';
+import 'package:navigation_experimental/screens/office/documents_details_page.dart';
+import 'package:navigation_experimental/screens/office/documents_page.dart';
+import 'package:navigation_experimental/screens/office/office_page.dart';
+import 'package:navigation_experimental/screens/office/tasks_page.dart';
 
 const String homeScreenRoute = 'home';
 const String detailsScreenRoute = 'details';
+
+final GlobalKey<NavigatorState> _rootNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'root');
+
+final GlobalKey<NavigatorState> _officeNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'office');
+
+final shellRouter = GoRouter(
+  navigatorKey: _rootNavigatorKey,
+  initialLocation: '/home',
+  routes: [
+    StatefulShellRoute.indexedStack(
+      // parentNavigatorKey: _mainNavigatorKey,
+      builder: (context, state, navigationShell) =>
+          MainPage(navigationShell: navigationShell),
+      branches: <StatefulShellBranch>[
+        StatefulShellBranch(
+          // navigatorKey: _sectionANavigatorKey,
+          routes: [
+            GoRoute(
+              name: homeScreenRoute,
+              path: '/home',
+              builder: (context, state) => const HomeScreen(),
+              routes: [
+                GoRoute(
+                  path: 'details/:id',
+                  name: detailsScreenRoute,
+                  onExit: (context, state) async {
+                    log('dreamly popped');
+
+                    return true;
+                  },
+                  pageBuilder: (context, state) => MyMaterialPage(
+                    // backRouteName: '/home',
+                    // transitionDuration: const Duration(milliseconds: 200),
+                    child: DetailsScreen(
+                      id: int.parse(state.pathParameters['id']!),
+                      isChatOpened:
+                          state.uri.queryParameters.containsKey('chat'),
+                      messageId: state.uri.queryParameters['messageId'],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              name: 'library',
+              path: '/library',
+              builder: (context, state) => const LibraryPage(),
+              routes: [
+                GoRoute(
+                  path: 'library_details',
+                  name: 'library_details',
+                  onExit: (context, state) async {
+                    log('dreamly popped');
+
+                    return true;
+                  },
+                  builder: (context, state) => const LibraryDetails(),
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          initialLocation: '/office/documents',
+          navigatorKey: _officeNavigatorKey,
+          routes: [
+            GoRoute(
+              name: 'office',
+              path: '/office',
+              builder: (context, state) => const Scaffold(),
+              routes: [
+                StatefulShellRoute(
+                  parentNavigatorKey: _officeNavigatorKey,
+                  builder: (context, state, officeNavigationShell) =>
+                      officeNavigationShell,
+                  navigatorContainerBuilder:
+                      (context, officeNavigationShell, children) => OfficePage(
+                    officeNavigationShell: officeNavigationShell,
+                    children: children,
+                  ),
+                  branches: [
+                    StatefulShellBranch(
+                      routes: [
+                        GoRoute(
+                          path: 'documents',
+                          name: 'documents',
+                          onExit: (context, state) async {
+                            log('dreamly popped');
+
+                            return true;
+                          },
+                          builder: (context, state) => const DocumentsPage(),
+                          routes: [
+                            GoRoute(
+                              parentNavigatorKey: _officeNavigatorKey,
+                              path: 'documents_details',
+                              name: 'documents_details',
+                              onExit: (context, state) async {
+                                log('dreamly popped');
+
+                                return true;
+                              },
+                              builder: (context, state) =>
+                                  const DocumentsDetailsPage(),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    StatefulShellBranch(
+                      routes: [
+                        GoRoute(
+                          path: 'tasks',
+                          name: 'tasks',
+                          onExit: (context, state) async {
+                            log('dreamly popped');
+
+                            return true;
+                          },
+                          builder: (context, state) => const TasksPage(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
+  ],
+);
 
 final router = GoRouter(
   initialLocation: '/home',

@@ -7,8 +7,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return SafeArea(
         child: Column(
           children: [
             Text('123'),
@@ -34,12 +33,32 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: const Text('Open details with chat on message'),
                   ),
+
+                  ElevatedButton(
+                    onPressed: () => context.goNamed(
+                      'library',
+                    ),
+                    child: const Text('Go to library'),
+                  ),
+
+                  ElevatedButton(
+                    onPressed: () => context.goNamed(
+                      'library_details',
+                    ),
+                    child: const Text('Go to library Details'),
+                  ),
+
+                  ElevatedButton(
+                    onPressed: () => context.pushNamed(
+                      'library',
+                    ),
+                    child: const Text('Push to library'),
+                  ),
                 ],
               ),
             ),
           ],
         ),
-      ),
     );
   }
 }
