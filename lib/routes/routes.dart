@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigation_experimental/main_page.dart';
+import 'package:navigation_experimental/routes/router_observer.dart';
 import 'package:navigation_experimental/routes/transition.dart';
 import 'package:navigation_experimental/screens/details/details_screen.dart';
 // import 'package:navigation_experimental/screens/details_screen.dart';
@@ -17,20 +18,19 @@ import 'package:navigation_experimental/screens/office/tasks_page.dart';
 const String homeScreenRoute = 'home';
 const String detailsScreenRoute = 'details';
 
-final GlobalKey<NavigatorState> _rootNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'root');
+final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final GlobalKey<NavigatorState> _officeNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'office');
 
 final shellRouter = GoRouter(
+  observers: [MyNavObserver()],
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/home',
   routes: [
     StatefulShellRoute.indexedStack(
       // parentNavigatorKey: _mainNavigatorKey,
-      builder: (context, state, navigationShell) =>
-          MainPage(navigationShell: navigationShell),
+      builder: (context, state, navigationShell) => MainPage(navigationShell: navigationShell),
       branches: <StatefulShellBranch>[
         StatefulShellBranch(
           // navigatorKey: _sectionANavigatorKey,
@@ -53,8 +53,7 @@ final shellRouter = GoRouter(
                     // transitionDuration: const Duration(milliseconds: 200),
                     child: DetailsScreen(
                       id: int.parse(state.pathParameters['id']!),
-                      isChatOpened:
-                          state.uri.queryParameters.containsKey('chat'),
+                      isChatOpened: state.uri.queryParameters.containsKey('chat'),
                       messageId: state.uri.queryParameters['messageId'],
                     ),
                   ),
@@ -95,10 +94,9 @@ final shellRouter = GoRouter(
               routes: [
                 StatefulShellRoute(
                   parentNavigatorKey: _officeNavigatorKey,
-                  builder: (context, state, officeNavigationShell) =>
-                      officeNavigationShell,
-                  navigatorContainerBuilder:
-                      (context, officeNavigationShell, children) => OfficePage(
+                  builder: (context, state, officeNavigationShell) => officeNavigationShell,
+                  navigatorContainerBuilder: (context, officeNavigationShell, children) =>
+                      OfficePage(
                     officeNavigationShell: officeNavigationShell,
                     children: children,
                   ),
@@ -124,8 +122,7 @@ final shellRouter = GoRouter(
 
                                 return true;
                               },
-                              builder: (context, state) =>
-                                  const DocumentsDetailsPage(),
+                              builder: (context, state) => const DocumentsDetailsPage(),
                             ),
                           ],
                         ),
