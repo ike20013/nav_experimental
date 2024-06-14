@@ -33,6 +33,7 @@ final shellRouter = GoRouter(
       builder: (context, state, navigationShell) => MainPage(navigationShell: navigationShell),
       branches: <StatefulShellBranch>[
         StatefulShellBranch(
+            observers: [MyNavObserver()],
           // navigatorKey: _sectionANavigatorKey,
           routes: [
             GoRoute(
@@ -51,6 +52,8 @@ final shellRouter = GoRouter(
                   pageBuilder: (context, state) => MyMaterialPage(
                     // backRouteName: '/home',
                     // transitionDuration: const Duration(milliseconds: 200),
+                    // key: state.pageKey,
+                    // name: state.name,
                     child: DetailsScreen(
                       id: int.parse(state.pathParameters['id']!),
                       isChatOpened: state.uri.queryParameters.containsKey('chat'),
@@ -63,6 +66,7 @@ final shellRouter = GoRouter(
           ],
         ),
         StatefulShellBranch(
+            observers: [MyNavObserver()],
           routes: [
             GoRoute(
               name: 'library',
@@ -77,13 +81,16 @@ final shellRouter = GoRouter(
 
                     return true;
                   },
-                  builder: (context, state) => const LibraryDetails(),
+                  builder: (context, state) => const LibraryDetails(
+                  
+                  ),
                 ),
               ],
             ),
           ],
         ),
         StatefulShellBranch(
+       observers: [MyNavObserver()],
           initialLocation: '/office/documents',
           navigatorKey: _officeNavigatorKey,
           routes: [
@@ -102,6 +109,7 @@ final shellRouter = GoRouter(
                   ),
                   branches: [
                     StatefulShellBranch(
+                        observers: [MyNavObserver()],
                       routes: [
                         GoRoute(
                           path: 'documents',
@@ -129,6 +137,7 @@ final shellRouter = GoRouter(
                       ],
                     ),
                     StatefulShellBranch(
+                        observers: [MyNavObserver()],
                       routes: [
                         GoRoute(
                           path: 'tasks',

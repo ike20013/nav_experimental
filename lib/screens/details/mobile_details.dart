@@ -21,8 +21,7 @@ class MobileDetails extends StatefulWidget {
 class _MobileDetailsState extends State<MobileDetails> {
   PersistentBottomSheetController? _controller;
 
-  @override
-  void initState() {
+  void _openChat() {
     Future.delayed(
       Duration.zero,
       () {
@@ -35,6 +34,19 @@ class _MobileDetailsState extends State<MobileDetails> {
         }
       },
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant MobileDetails oldWidget) {
+    if (oldWidget.isChatOpened != widget.isChatOpened) {
+      _openChat();
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void initState() {
+    _openChat();
     super.initState();
   }
 
