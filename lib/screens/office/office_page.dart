@@ -65,14 +65,32 @@ class OfficePage extends StatefulWidget {
   State<OfficePage> createState() => _OfficePageState();
 }
 
-class _OfficePageState extends State<OfficePage> {
+class _OfficePageState extends State<OfficePage>
+    with SingleTickerProviderStateMixin {
   late final PageController _controller;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _controller = PageController(
       initialPage: widget.officeNavigationShell.currentIndex,
+    );
+
+    _tabController = TabController(
+      initialIndex: widget.officeNavigationShell.currentIndex,
+      length: widget.children.length,
+      vsync: this,
+    );
+
+    _controller.addListener(
+      () {
+        if (!_tabController.indexIsChanging) {
+          _tabController.offset =
+              (_controller.page ?? 0 - _tabController.index) /
+                  (_tabController.length - 1);
+        }
+      },
     );
   }
 
@@ -88,14 +106,20 @@ class _OfficePageState extends State<OfficePage> {
     final navigationShell = widget.officeNavigationShell;
     final page = _controller.page ?? _controller.initialPage;
     final index = page.round();
+
     if (index == navigationShell.currentIndex) {
       return;
     }
-    _controller.animateToPage(
-      widget.officeNavigationShell.currentIndex,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.linear,
-    );
+
+    _tabController.animateTo(widget.officeNavigationShell.currentIndex);
+
+    // _controller.animateToPage(
+    //   widget.officeNavigationShell.currentIndex,
+    //   duration: const Duration(milliseconds: 300),
+    //   curve: Curves.linear,
+    // );
+
+    // _tabController.animateTo(widget.officeNavigationShell.currentIndex);
   }
 
   @override
@@ -103,47 +127,55 @@ class _OfficePageState extends State<OfficePage> {
     final navigationShell = widget.officeNavigationShell;
     final children = widget.children;
 
-    return DefaultTabController(
-      length: children.length,
-      initialIndex: navigationShell.currentIndex,
-      child: Builder(builder: (context) {
-
-
+    return Builder(
+      builder: (context) {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Office'),
           ),
-          body: Column(children: [
-            TabBar(
-              controller: DefaultTabController.of(context),
-              tabs: const [
-                Icon(Icons.abc),
-                Icon(Icons.ac_unit),
-              ],
-            ),
-            Expanded(
-              child: PageView.builder(
-                controller: _controller,
-                itemCount: children.length,
-                onPageChanged: (index) {
-                  debugPrint('index: $index, currentIndex: ${navigationShell.currentIndex}');
-
-                  // Ignore tap events.
-                  if (index == navigationShell.currentIndex) {
-                    return;
-                  }
-
-                  navigationShell.goBranch(
-                    index,
-                    initialLocation: false,
+          body: Column(
+            children: [
+              TabBar(
+                controller: _tabController,
+                onTap: (value) {
+                  _controller.animateToPage(
+                    value,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.linear,
                   );
+
+                  _tabController.animateTo(value);
                 },
-                itemBuilder: (context, index) => children[index],
+                tabs: const [
+                  Icon(Icons.abc),
+                  Icon(Icons.ac_unit),
+                ],
               ),
-            ),
-          ]),
+              Expanded(
+                child: PageView.builder(
+                  controller: _controller,
+                  itemCount: children.length,
+                  onPageChanged: (index) {
+                    debugPrint(
+                        'index: $index, currentIndex: ${navigationShell.currentIndex}');
+
+                    // Ignore tap events.
+                    if (index == navigationShell.currentIndex) {
+                      return;
+                    }
+
+                    navigationShell.goBranch(
+                      index,
+                      initialLocation: false,
+                    );
+                  },
+                  itemBuilder: (context, index) => children[index],
+                ),
+              ),
+            ],
+          ),
         );
-      }),
+      },
     );
   }
 }
