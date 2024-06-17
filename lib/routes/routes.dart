@@ -14,6 +14,7 @@ import 'package:navigation_experimental/screens/details/details_screen.dart';
 import 'package:navigation_experimental/screens/home_screen.dart';
 import 'package:navigation_experimental/screens/library/library/library.dart';
 import 'package:navigation_experimental/screens/library/library_details/library_details.dart';
+import 'package:navigation_experimental/screens/news/news_detail_page.dart';
 import 'package:navigation_experimental/screens/news/news_screen.dart';
 import 'package:navigation_experimental/screens/office/documents_details_page.dart';
 import 'package:navigation_experimental/screens/office/documents_page.dart';
@@ -172,20 +173,31 @@ final shellRouter = GoRouter(
           initialLocation: '/news/ ',
           routes: [
             GoRoute(
-              name: 'news',
-              path: '/news',
-              builder: (context, state) => NewsPage(),
-              routes: [
-                GoRoute(
-                  path: ':category',
-                  name: 'categoriedNews',
-                  builder: (context, state) {
-                    final category = state.pathParameters['category']!;
-                    return NewsPage(category: category);
-                  },
-                ),
-              ],
-            ),
+                path: '/news/:category',
+                name: 'categoriedNews',
+                builder: (context, state) {
+                  final category = state.pathParameters['category']!;
+                  return NewsPage(category: category);
+                },
+                routes: [
+                  GoRoute(
+                    path: ':newsId',
+                    name: 'newsDetail',
+                    builder: (context, state) {
+                      final newsId = state.pathParameters['newsId']!;
+                      return NewsDetailPage(newsId: newsId);
+                    },
+                  ),
+                ],),
+
+            // GoRoute(
+            //   name: 'news',
+            //   path: '/news',
+            //   // builder: (context, state) => NewsPage(),
+            //   routes: [
+
+            //   ],
+            // ),
           ],
         ),
       ],
