@@ -1,5 +1,5 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class DynamicTabBar extends StatefulWidget {
   final List<String> categories;
@@ -24,10 +24,10 @@ class _DynamicTabBarState extends State<DynamicTabBar>
         .indexWhere((element) => element == widget.currentCategory);
 
     if (initCategory == -1) {
-      WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) {
-        context.go(
-            '/news/${widget.categories[initCategory != -1 ? initCategory : 0]}');
-      });
+      // WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) {
+      //   context.go(
+      //       '/news/${widget.categories[initCategory != -1 ? initCategory : 0]}');
+      // });
     }
 
     _tabController = TabController(
@@ -42,13 +42,14 @@ class _DynamicTabBarState extends State<DynamicTabBar>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(context.currentBeamLocation.state.routeInformation.uri.toString()),
         automaticallyImplyLeading: false,
         bottom: TabBar(
           controller: _tabController,
           onTap: (value) {
             // _tabController.animateTo(value);
 
-            context.go('/news/${widget.categories[value]}');
+            // context.go('/news/${widget.categories[value]}');
           },
           tabs: widget.categories
               .map(
@@ -69,11 +70,11 @@ class _DynamicTabBarState extends State<DynamicTabBar>
                     child: Column(
                       children: [
                         Text(e),
-                        ElevatedButton(
-                          onPressed: () => context.go(
-                              '/news/${widget.categories[_tabController.index]}/${_tabController.index + 100}'),
-                          child: Text('Go To News'),
-                        ),
+                        // ElevatedButton(
+                        //   onPressed: () => context.go(
+                        //       '/news/${widget.categories[_tabController.index]}/${_tabController.index + 100}'),
+                        //   child: Text('Go To News'),
+                        // ),
                         Expanded(
                           child: ListView.builder(
                             itemBuilder: (context, index) =>

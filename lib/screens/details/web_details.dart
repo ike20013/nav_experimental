@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class WebDetails extends StatelessWidget {
   final int id;
@@ -26,19 +25,19 @@ class WebDetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text('Curr id is $id'),
-                ElevatedButton(
-                  onPressed: () => context.go('/home/details/500?chat'),
-                  child: Text('Open chat'),
-                ),
-                ElevatedButton(
-                  onPressed: () => context.go('/home/details/500'),
-                  child: Text('Close chat'),
-                ),
-                ElevatedButton(
-                  onPressed: () =>
-                      context.go('/home/details/500?chat&messageId=123123123'),
-                  child: Text('Open Message'),
-                )
+                // ElevatedButton(
+                //   onPressed: () => context.go('/home/details/500?chat'),
+                //   child: Text('Open chat'),
+                // ),
+                // ElevatedButton(
+                //   onPressed: () => context.go('/home/details/500'),
+                //   child: Text('Close chat'),
+                // ),
+                // ElevatedButton(
+                //   onPressed: () =>
+                //       context.go('/home/details/500?chat&messageId=123123123'),
+                //   child: Text('Open Message'),
+                // )
               ],
             ),
             AnimatedSwitcher(

@@ -1,64 +1,13 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
-// class OfficePage extends StatelessWidget {
-//   final StatefulNavigationShell officeNavigationShell;
-//   final List<Widget> children;
-
-//   const OfficePage({
-//     super.key,
-//     required this.officeNavigationShell,
-//     required this.children,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-
-//     return DefaultTabController(
-//       length: children.length,
-//       initialIndex: officeNavigationShell.currentIndex,
-//       child: Builder(
-//         builder: (context) {
-//           final tabController = DefaultTabController.of(context);
-
-//           tabController.index = officeNavigationShell.currentIndex;
-
-//           tabController.addListener(() {
-//             if (tabController.indexIsChanging) {
-//               officeNavigationShell.goBranch(
-//                 tabController.index,
-//                 initialLocation: tabController.index == officeNavigationShell.currentIndex,
-//               );
-//             }
-//           });
-
-//           return Scaffold(
-//             appBar: AppBar(
-//               automaticallyImplyLeading: false,
-//               bottom: TabBar(
-//                 controller: tabController,
-//                 tabs: const [
-//                   Icon(Icons.abc),
-//                   Icon(Icons.ac_unit),
-//                 ],
-//               ),
-//             ),
-//             body: TabBarView(children: children),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
+import 'package:navigation_experimental/beamer_router/locations/office/documents_location.dart';
+import 'package:navigation_experimental/beamer_router/locations/office/tasks_location.dart';
+import 'package:navigation_experimental/screens/office/documents_screen.dart';
+import 'package:navigation_experimental/screens/office/tasks_screen.dart';
 
 class OfficePage extends StatefulWidget {
-  final StatefulNavigationShell officeNavigationShell;
-  final List<Widget> children;
-
   const OfficePage({
     super.key,
-    required this.officeNavigationShell,
-    required this.children,
   });
 
   @override
@@ -67,115 +16,78 @@ class OfficePage extends StatefulWidget {
 
 class _OfficePageState extends State<OfficePage>
     with SingleTickerProviderStateMixin {
-  late final PageController _controller;
-  late final TabController _tabController;
+  late TabController _tabController;
+
+  final routerDelegates = [
+    BeamerDelegate(
+      initialPath: '/office/documents',
+      locationBuilder: (routeInformation, _) {
+        if (routeInformation.uri.pathSegments.contains('documents')) {
+          return DocumentsLocation(routeInformation);
+        }
+        return NotFound(path: routeInformation.uri.toString());
+      },
+    ),
+    BeamerDelegate(
+      initialPath: '/office/tasks',
+      locationBuilder: (routeInformation, _) {
+        if (routeInformation.uri.pathSegments.contains('tasks')) {
+          return TasksLocation(routeInformation);
+        }
+        return NotFound(path: routeInformation.uri.toString());
+      },
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
-    _controller = PageController(
-      initialPage: widget.officeNavigationShell.currentIndex,
-    );
+    _tabController = TabController(length: 2, vsync: this);
 
-    _tabController = TabController(
-      initialIndex: widget.officeNavigationShell.currentIndex,
-      length: widget.children.length,
-      vsync: this,
-    );
+    // _tabController.addListener(() {
+    //   if (_tabController.indexIsChanging) {
 
-    _controller.addListener(
-      () {
-        if (!_tabController.indexIsChanging) {
-          _tabController.offset =
-              (_controller.page ?? 0 - _tabController.index) /
-                  (_tabController.length - 1);
-        }
-      },
-    );
-  }
+    //         routerDelegates[_tabController.index].update(rebuild: false);
+    //       }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+    // });
 
-  @override
-  void didUpdateWidget(covariant OfficePage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final navigationShell = widget.officeNavigationShell;
-    final page = _controller.page ?? _controller.initialPage;
-    final index = page.round();
-
-    if (index == navigationShell.currentIndex) {
-      return;
-    }
-
-    _tabController.animateTo(widget.officeNavigationShell.currentIndex);
-
-    // _controller.animateToPage(
-    //   widget.officeNavigationShell.currentIndex,
-    //   duration: const Duration(milliseconds: 300),
-    //   curve: Curves.linear,
-    // );
-
-    // _tabController.animateTo(widget.officeNavigationShell.currentIndex);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final currentBeam = context.currentBeamLocation.pathPatterns;
+      if (currentBeam.contains('/tasks')) {
+        _tabController.index = 1;
+      } else {
+        _tabController.index = 0;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final navigationShell = widget.officeNavigationShell;
-    final children = widget.children;
-
-    return Builder(
-      builder: (context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Office'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+            context.currentBeamLocation.state.routeInformation.uri.toString()),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: 'Documents'),
+            Tab(text: 'Tasks'),
+          ],
+          onTap: (value) => routerDelegates[value].update(rebuild: true),
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          Beamer(
+            routerDelegate: routerDelegates[0],
           ),
-          body: Column(
-            children: [
-              TabBar(
-                controller: _tabController,
-                onTap: (value) {
-                  _controller.animateToPage(
-                    value,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.linear,
-                  );
-
-                  _tabController.animateTo(value);
-                },
-                tabs: const [
-                  Icon(Icons.abc),
-                  Icon(Icons.ac_unit),
-                ],
-              ),
-              Expanded(
-                child: PageView.builder(
-                  controller: _controller,
-                  itemCount: children.length,
-                  onPageChanged: (index) {
-                    debugPrint(
-                        'index: $index, currentIndex: ${navigationShell.currentIndex}');
-
-                    // Ignore tap events.
-                    if (index == navigationShell.currentIndex) {
-                      return;
-                    }
-
-                    navigationShell.goBranch(
-                      index,
-                      initialLocation: false,
-                    );
-                  },
-                  itemBuilder: (context, index) => children[index],
-                ),
-              ),
-            ],
+          Beamer(
+            routerDelegate: routerDelegates[1],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

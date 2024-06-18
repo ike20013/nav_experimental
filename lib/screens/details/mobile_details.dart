@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class MobileDetails extends StatefulWidget {
   final int id;
@@ -85,18 +84,18 @@ class _MobileDetailsState extends State<MobileDetails> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text('Curr id is ${widget.id}'),
-            ElevatedButton(
-              onPressed: () => context.go('/home/details/500?chat'),
-              child: const Text('Open chat'),
-            ),
-            ElevatedButton(
-              onPressed: () => context.go('/home/details/500'),
-              child: const Text('Close chat'),
-            ),
-            ElevatedButton(
-              onPressed: () => context.go('/home/details/500?chat&messageId=123123123'),
-              child: const Text('Open Message'),
-            )
+            // ElevatedButton(
+            //   onPressed: () => context.go('/home/details/500?chat'),
+            //   child: const Text('Open chat'),
+            // ),
+            // ElevatedButton(
+            //   onPressed: () => context.go('/home/details/500'),
+            //   child: const Text('Close chat'),
+            // ),
+            // ElevatedButton(
+            //   onPressed: () => context.go('/home/details/500?chat&messageId=123123123'),
+            //   child: const Text('Open Message'),
+            // )
           ],
         ),
       ),

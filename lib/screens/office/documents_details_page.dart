@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DocumentsDetailsPage extends StatelessWidget {
-  const DocumentsDetailsPage({super.key});
+  final String id;
+  const DocumentsDetailsPage({super.key, required this.id,});
 
   @override
   Widget build(BuildContext context) {
