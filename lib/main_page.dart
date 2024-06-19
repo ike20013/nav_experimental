@@ -20,8 +20,7 @@ class MainPage extends StatelessWidget {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.work), label: 'Library'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.local_post_office), label: 'Office'),
+          BottomNavigationBarItem(icon: Icon(Icons.local_post_office), label: 'Office'),
           BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: 'News'),
         ],
         currentIndex: navigationShell.currentIndex,

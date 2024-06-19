@@ -24,11 +24,11 @@ import 'package:navigation_experimental/screens/office/tasks_page.dart';
 const String homeScreenRoute = 'home';
 const String detailsScreenRoute = 'details';
 
-final GlobalKey<NavigatorState> _rootNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'root');
+final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final GlobalKey<NavigatorState> _officeNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'office');
+final visitedRoutes = [];
 
 final shellRouter = GoRouter(
   observers: [MyNavObserver()],
@@ -40,8 +40,7 @@ final shellRouter = GoRouter(
   routes: [
     StatefulShellRoute.indexedStack(
       // parentNavigatorKey: _mainNavigatorKey,
-      builder: (context, state, navigationShell) =>
-          MainPage(navigationShell: navigationShell),
+      builder: (context, state, navigationShell) => MainPage(navigationShell: navigationShell),
       branches: <StatefulShellBranch>[
         StatefulShellBranch(
           observers: [MyNavObserver()],
@@ -67,8 +66,7 @@ final shellRouter = GoRouter(
                     // name: state.name,
                     child: DetailsScreen(
                       id: int.parse(state.pathParameters['id']!),
-                      isChatOpened:
-                          state.uri.queryParameters.containsKey('chat'),
+                      isChatOpened: state.uri.queryParameters.containsKey('chat'),
                       messageId: state.uri.queryParameters['messageId'],
                     ),
                   ),
@@ -111,10 +109,9 @@ final shellRouter = GoRouter(
               routes: [
                 StatefulShellRoute(
                   parentNavigatorKey: _officeNavigatorKey,
-                  builder: (context, state, officeNavigationShell) =>
-                      officeNavigationShell,
-                  navigatorContainerBuilder:
-                      (context, officeNavigationShell, children) => OfficePage(
+                  builder: (context, state, officeNavigationShell) => officeNavigationShell,
+                  navigatorContainerBuilder: (context, officeNavigationShell, children) =>
+                      OfficePage(
                     officeNavigationShell: officeNavigationShell,
                     children: children,
                   ),
@@ -141,8 +138,7 @@ final shellRouter = GoRouter(
 
                                 return true;
                               },
-                              builder: (context, state) =>
-                                  const DocumentsDetailsPage(),
+                              builder: (context, state) => const DocumentsDetailsPage(),
                             ),
                           ],
                         ),
@@ -170,25 +166,27 @@ final shellRouter = GoRouter(
           ],
         ),
         StatefulShellBranch(
-          initialLocation: '/news/ ',
+          initialLocation: '/news',
           routes: [
             GoRoute(
-                path: '/news/:category',
-                name: 'categoriedNews',
-                builder: (context, state) {
-                  final category = state.pathParameters['category']!;
-                  return NewsPage(category: category);
-                },
-                routes: [
-                  GoRoute(
-                    path: ':newsId',
-                    name: 'newsDetail',
-                    builder: (context, state) {
-                      final newsId = state.pathParameters['newsId']!;
-                      return NewsDetailPage(newsId: newsId);
-                    },
-                  ),
-                ],),
+              path: '/news',
+              name: 'categoriedNews',
+              builder: (context, state) {
+                final category = state.uri.queryParameters['category'];
+
+                return NewsPage(category: category);
+              },
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  name: 'newsDetail',
+                  builder: (context, state) {
+                    final newsId = state.pathParameters['id']!;
+                    return NewsDetailPage(newsId: newsId);
+                  },
+                ),
+              ],
+            ),
 
             // GoRoute(
             //   name: 'news',

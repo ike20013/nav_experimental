@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:navigation_experimental/widgets/sliver_tab_bar.dart';
 
 class DynamicTabBar extends StatefulWidget {
   final List<String> categories;
@@ -14,79 +17,119 @@ class DynamicTabBar extends StatefulWidget {
   State<DynamicTabBar> createState() => _DynamicTabBarState();
 }
 
-class _DynamicTabBarState extends State<DynamicTabBar>
-    with SingleTickerProviderStateMixin {
+class _DynamicTabBarState extends State<DynamicTabBar> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+
+  late final Map<String, ScrollController> _scrollControllers;
 
   @override
   void initState() {
-    final int initCategory = widget.categories
-        .indexWhere((element) => element == widget.currentCategory);
+    super.initState();
+
+    _scrollControllers = {};
+    final int initCategory =
+        widget.categories.indexWhere((category) => category == widget.currentCategory);
 
     if (initCategory == -1) {
       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) {
-        context.go(
-            '/news/${widget.categories[initCategory != -1 ? initCategory : 0]}');
+        _goRouterUpdateCategory(widget.categories[initCategory != -1 ? initCategory : 0]);
       });
     }
 
-    _tabController = TabController(
-      length: widget.categories.length,
-      vsync: this,
-      initialIndex: initCategory != -1 ? initCategory : 0,
-    );
-    super.initState();
+      _tabController = TabController(
+        length: widget.categories.length,
+        vsync: this,
+        initialIndex: initCategory != -1 ? initCategory : 0,
+      )..addListener(() {
+          if (!_tabController.indexIsChanging) {
+            log('${_tabController.index}');
+
+            final uriCategory =
+                GoRouter.of(context).routeInformationProvider.value.uri.queryParameters['category'];
+
+            final int index = widget.categories.indexWhere((c) => c == uriCategory);
+
+            if (index != _tabController.index) {
+              _goRouterUpdateCategory(widget.categories[_tabController.index]);
+            }
+          }
+      });
+  }
+
+  @override
+  void didUpdateWidget(covariant DynamicTabBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_tabController.indexIsChanging) {
+      final uriCategory =
+          GoRouter.of(context).routeInformationProvider.value.uri.queryParameters['category'];
+
+      final int index = widget.categories.indexWhere((c) => c == uriCategory);
+
+      if (index != -1 && index != _tabController.index) {
+        log('update');
+        _tabController.animateTo(index);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (value) {
-            // _tabController.animateTo(value);
-
-            context.go('/news/${widget.categories[value]}');
-          },
-          tabs: widget.categories
-              .map(
-                (e) => Text(e),
-              )
-              .toList(),
+        body: NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) => [
+        SliverAppBar(
+          pinned: true,
+          toolbarHeight: 30,
+          title:
+              SafeArea(child: Text('${GoRouter.of(context).routeInformationProvider.value.uri}')),
         ),
-      ),
+        SliverTabBar(
+          controller: _tabController,
+          tabs: widget.categories.map((c) => Tab(text: c)).toList(),
+        ),
+      ],
       body: TabBarView(
         controller: _tabController,
         children: widget.categories
             .map(
-              (e) => Padding(
-                key: ValueKey(e),
-                padding: EdgeInsets.all(16),
-                child: Container(
-                    color: Colors.grey,
-                    child: Column(
-                      children: [
-                        Text(e),
-                        ElevatedButton(
-                          onPressed: () => context.go(
-                              '/news/${widget.categories[_tabController.index]}/${_tabController.index + 100}'),
-                          child: Text('Go To News'),
+              (category) => Builder(builder: (context) {
+                _setupScrollController(category);
+
+                return CustomScrollView(
+                    key: PageStorageKey(category),
+                    controller: _scrollControllers[category],
+                    slivers: [
+                      SliverOverlapInjector(
+                          handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        sliver: SliverList.separated(
+                          itemBuilder: (context, index) => GestureDetector(
+                              onTap: () => context.goNamed(
+                                    'newsDetail',
+                                    pathParameters: {'id': '$index'},
+                                  ),
+                              child: Text('Item $index')),
+                          itemCount: 100,
+                          separatorBuilder: (context, index) => const SizedBox(height: 8),
                         ),
-                        Expanded(
-                          child: ListView.builder(
-                            itemBuilder: (context, index) =>
-                                Text('Item $index'),
-                            itemCount: 100,
-                          ),
-                        ),
-                      ],
-                    )),
-              ),
+                      ),
+                    ]);
+              }),
             )
             .toList(),
       ),
-    );
+    ));
+  }
+
+  void _goRouterUpdateCategory(String category) {
+    context.go('/news?category=$category');
+  }
+
+  void _setupScrollController(String category) {
+    if (_scrollControllers[category] == null) {
+      _scrollControllers[category] = ScrollController();
+    }
   }
 }
+// 

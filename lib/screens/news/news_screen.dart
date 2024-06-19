@@ -10,10 +10,18 @@ class NewsPage extends StatelessWidget {
     return FutureBuilder(
       future: getCategories(),
       builder: (context, snapshot) {
-        if(snapshot.hasData) {
-          return DynamicTabBar(categories: snapshot.data!, currentCategory: category,);
+        if (snapshot.hasData) {
+          return DynamicTabBar(
+            categories: snapshot.data!,
+            currentCategory: category,
+          );
         }
-        return const CircularProgressIndicator();
+        return const Center(
+          child: SizedBox.square(
+            dimension: 32,
+            child: CircularProgressIndicator(),
+          ),
+        );
       },
     );
   }
@@ -21,6 +29,6 @@ class NewsPage extends StatelessWidget {
   Future<List<String>> getCategories() async {
     await Future.delayed(const Duration(seconds: 1));
 
-    return ['first', 'second', 'third', 'fourth', 'fifth'];
+    return ['first', 'second', 'third'];
   }
 }
