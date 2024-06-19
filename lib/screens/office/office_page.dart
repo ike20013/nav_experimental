@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -65,61 +67,56 @@ class OfficePage extends StatefulWidget {
   State<OfficePage> createState() => _OfficePageState();
 }
 
-class _OfficePageState extends State<OfficePage>
-    with SingleTickerProviderStateMixin {
-  late final PageController _controller;
+class _OfficePageState extends State<OfficePage> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+
+  late final Map<String, ScrollController> _scrollControllers;
 
   @override
   void initState() {
     super.initState();
-    _controller = PageController(
-      initialPage: widget.officeNavigationShell.currentIndex,
-    );
+
+    _scrollControllers = {};
+    const int initCategory = 0;
+
+    if (initCategory == -1) {
+      WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) {});
+    }
 
     _tabController = TabController(
-      initialIndex: widget.officeNavigationShell.currentIndex,
-      length: widget.children.length,
+      length: 2,
       vsync: this,
-    );
-
-    _controller.addListener(
-      () {
+      initialIndex: initCategory != -1 ? initCategory : 0,
+    )..addListener(() {
         if (!_tabController.indexIsChanging) {
-          _tabController.offset =
-              (_controller.page ?? 0 - _tabController.index) /
-                  (_tabController.length - 1);
-        }
-      },
-    );
-  }
+          log('${_tabController.index}');
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+          final uriCategory =
+              GoRouter.of(context).routeInformationProvider.value.uri.queryParameters['category'];
+
+          // final int index = widget.categories.indexWhere((c) => c == uriCategory);
+
+          // if (index != _tabController.index) {
+          //   _goRouterUpdateCategory(widget.categories[_tabController.index]);
+          // }
+        }
+      });
   }
 
   @override
   void didUpdateWidget(covariant OfficePage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final navigationShell = widget.officeNavigationShell;
-    final page = _controller.page ?? _controller.initialPage;
-    final index = page.round();
+    if (!_tabController.indexIsChanging) {
+      final uriCategory =
+          GoRouter.of(context).routeInformationProvider.value.uri.queryParameters['category'];
 
-    if (index == navigationShell.currentIndex) {
-      return;
+      // final int index = widget.categories.indexWhere((c) => c == uriCategory);
+
+      // if (index != -1 && index != _tabController.index) {
+      //   log('update');
+      //   _tabController.animateTo(index);
+      // }
     }
-
-    _tabController.animateTo(widget.officeNavigationShell.currentIndex);
-
-    // _controller.animateToPage(
-    //   widget.officeNavigationShell.currentIndex,
-    //   duration: const Duration(milliseconds: 300),
-    //   curve: Curves.linear,
-    // );
-
-    // _tabController.animateTo(widget.officeNavigationShell.currentIndex);
   }
 
   @override
@@ -127,55 +124,15 @@ class _OfficePageState extends State<OfficePage>
     final navigationShell = widget.officeNavigationShell;
     final children = widget.children;
 
-    return Builder(
-      builder: (context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Office'),
-          ),
-          body: Column(
-            children: [
-              TabBar(
-                controller: _tabController,
-                onTap: (value) {
-                  _controller.animateToPage(
-                    value,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.linear,
-                  );
-
-                  _tabController.animateTo(value);
-                },
-                tabs: const [
-                  Icon(Icons.abc),
-                  Icon(Icons.ac_unit),
-                ],
-              ),
-              Expanded(
-                child: PageView.builder(
-                  controller: _controller,
-                  itemCount: children.length,
-                  onPageChanged: (index) {
-                    debugPrint(
-                        'index: $index, currentIndex: ${navigationShell.currentIndex}');
-
-                    // Ignore tap events.
-                    if (index == navigationShell.currentIndex) {
-                      return;
-                    }
-
-                    navigationShell.goBranch(
-                      index,
-                      initialLocation: false,
-                    );
-                  },
-                  itemBuilder: (context, index) => children[index],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+    return NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [],
+        body: const TabBarView(
+          children: [
+            // Tab1
+            SizedBox(),
+            // Tab 2
+            SizedBox()
+          ],
+        ));
   }
 }

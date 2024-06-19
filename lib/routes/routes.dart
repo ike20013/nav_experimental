@@ -166,7 +166,6 @@ final shellRouter = GoRouter(
           ],
         ),
         StatefulShellBranch(
-          initialLocation: '/news',
           routes: [
             GoRoute(
               path: '/news',
@@ -178,7 +177,7 @@ final shellRouter = GoRouter(
               },
               routes: [
                 GoRoute(
-                  path: ':id',
+                  path: 'article/:id',
                   name: 'newsDetail',
                   builder: (context, state) {
                     final newsId = state.pathParameters['id']!;

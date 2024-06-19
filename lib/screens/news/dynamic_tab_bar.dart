@@ -30,29 +30,23 @@ class _DynamicTabBarState extends State<DynamicTabBar> with SingleTickerProvider
     final int initCategory =
         widget.categories.indexWhere((category) => category == widget.currentCategory);
 
-    if (initCategory == -1) {
-      WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) {
-        _goRouterUpdateCategory(widget.categories[initCategory != -1 ? initCategory : 0]);
-      });
-    }
+    _tabController = TabController(
+      length: widget.categories.length,
+      vsync: this,
+      initialIndex: initCategory != -1 ? initCategory : 0,
+    )..addListener(() {
+        if (!_tabController.indexIsChanging) {
+          log('${_tabController.index}');
 
-      _tabController = TabController(
-        length: widget.categories.length,
-        vsync: this,
-        initialIndex: initCategory != -1 ? initCategory : 0,
-      )..addListener(() {
-          if (!_tabController.indexIsChanging) {
-            log('${_tabController.index}');
+          final uriCategory =
+              GoRouter.of(context).routeInformationProvider.value.uri.queryParameters['category'];
 
-            final uriCategory =
-                GoRouter.of(context).routeInformationProvider.value.uri.queryParameters['category'];
+          final int index = widget.categories.indexWhere((c) => c == uriCategory);
 
-            final int index = widget.categories.indexWhere((c) => c == uriCategory);
-
-            if (index != _tabController.index) {
-              _goRouterUpdateCategory(widget.categories[_tabController.index]);
-            }
+          if (index != _tabController.index) {
+            _goRouterUpdateCategory(widget.categories[_tabController.index]);
           }
+        }
       });
   }
 
@@ -105,10 +99,9 @@ class _DynamicTabBarState extends State<DynamicTabBar> with SingleTickerProvider
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         sliver: SliverList.separated(
                           itemBuilder: (context, index) => GestureDetector(
-                              onTap: () => context.goNamed(
-                                    'newsDetail',
-                                    pathParameters: {'id': '$index'},
-                                  ),
+                              onTap: () => context.goNamed('newsDetail',
+                                  pathParameters: {'id': '$index'},
+                                  queryParameters: {'category': category}),
                               child: Text('Item $index')),
                           itemCount: 100,
                           separatorBuilder: (context, index) => const SizedBox(height: 8),
