@@ -5,6 +5,20 @@ class TasksPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Tasks'),);
+    return CustomScrollView(
+      slivers: [
+        SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: SliverList.separated(
+            itemBuilder: (context, index) => GestureDetector(
+                // onTap: () => context.goNamed('newsDetail', pathParameters: {'id': '$index'}),
+                child: Text('Task $index')),
+            itemCount: 100,
+            separatorBuilder: (context, index) => const SizedBox(height: 8),
+          ),
+        ),
+      ],
+    );
   }
 }

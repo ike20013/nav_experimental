@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:navigation_experimental/screens/office/documents_page.dart';
+import 'package:navigation_experimental/screens/office/tasks_page.dart';
+import 'package:navigation_experimental/widgets/sliver_tab_bar.dart';
 
 // class OfficePage extends StatelessWidget {
 //   final StatefulNavigationShell officeNavigationShell;
@@ -54,14 +57,7 @@ import 'package:go_router/go_router.dart';
 // }
 
 class OfficePage extends StatefulWidget {
-  final StatefulNavigationShell officeNavigationShell;
-  final List<Widget> children;
-
-  const OfficePage({
-    super.key,
-    required this.officeNavigationShell,
-    required this.children,
-  });
+  const OfficePage({super.key});
 
   @override
   State<OfficePage> createState() => _OfficePageState();
@@ -121,17 +117,20 @@ class _OfficePageState extends State<OfficePage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final navigationShell = widget.officeNavigationShell;
-    final children = widget.children;
-
     return NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [],
-        body: const TabBarView(
-          children: [
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverTabBar(tabs: const [
+                Tab(text: 'Documents'),
+                Tab(text: 'Tasks'),
+              ], controller: _tabController),
+            ],
+        body: TabBarView(
+          controller: _tabController,
+          children: const [
             // Tab1
-            SizedBox(),
+            DocumentsPage(),
             // Tab 2
-            SizedBox()
+            TasksPage()
           ],
         ));
   }
