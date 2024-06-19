@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class DocumentsPage extends StatelessWidget {
   const DocumentsPage({super.key});
@@ -13,7 +14,7 @@ class DocumentsPage extends StatelessWidget {
           sliver: SliverList.separated(
             itemBuilder: (context, index) => GestureDetector(
                 // onTap: () => context.goNamed('newsDetail', pathParameters: {'id': '$index'}),
-                child: Text('Document $index')),
+                child: ElevatedButton(onPressed: () => context.goNamed('documents_details'), child: Text('Document $index')),),
             itemCount: 100,
             separatorBuilder: (context, index) => const SizedBox(height: 8),
           ),
