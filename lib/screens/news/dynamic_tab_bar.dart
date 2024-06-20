@@ -59,9 +59,8 @@ class _DynamicTabBarState extends State<DynamicTabBar> with SingleTickerProvider
 
       final int index = widget.categories.indexWhere((c) => c == uriCategory);
 
-      if (index != -1 && index != _tabController.index) {
-        log('update');
-        _tabController.animateTo(index);
+      if (index != _tabController.index) {
+        _tabController.animateTo(index != -1 ? index : 0);
       }
     }
   }

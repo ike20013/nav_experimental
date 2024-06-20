@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class TasksPage extends StatelessWidget {
   const TasksPage({super.key});
@@ -11,9 +12,8 @@ class TasksPage extends StatelessWidget {
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverList.separated(
-            itemBuilder: (context, index) => GestureDetector(
-                // onTap: () => context.goNamed('newsDetail', pathParameters: {'id': '$index'}),
-                child: Text('Task $index')),
+            itemBuilder: (context, index) => ElevatedButton(
+                onPressed: () => context.goNamed('task_details'), child: Text('Document $index')),
             itemCount: 100,
             separatorBuilder: (context, index) => const SizedBox(height: 8),
           ),

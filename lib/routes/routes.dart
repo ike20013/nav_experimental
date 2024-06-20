@@ -102,65 +102,67 @@ final shellRouter = GoRouter(
           initialLocation: '/office/documents',
           navigatorKey: _officeNavigatorKey,
           routes: [
-            GoRoute(
-              name: 'office',
-              path: '/office',
-              builder: (context, state) => const Scaffold(),
-              routes: [
-                StatefulShellRoute(
-                  parentNavigatorKey: _officeNavigatorKey,
-                  builder: (context, state, officeNavigationShell) =>
-                      officeNavigationShell,
-                  navigatorContainerBuilder:
-                      (context, officeNavigationShell, children) => OfficePage(
-                    officeNavigationShell: officeNavigationShell,
-                    children: children,
-                  ),
-                  branches: [
-                    StatefulShellBranch(
-                      observers: [MyNavObserver()],
+            StatefulShellRoute(
+              parentNavigatorKey: _officeNavigatorKey,
+              builder: (context, state, officeNavigationShell) => officeNavigationShell,
+              navigatorContainerBuilder: (context, officeNavigationShell, children) => OfficePage(
+                navigationShell: officeNavigationShell,
+                children: children,
+              ),
+              branches: [
+                StatefulShellBranch(
+                  observers: [MyNavObserver()],
+                  routes: [
+                    GoRoute(
+                      path: '/office/documents',
+                      name: 'documents',
+                      onExit: (context, state) async {
+                        log('dreamly popped');
+
+                        return true;
+                      },
+                      builder: (context, state) => const DocumentsPage(),
                       routes: [
                         GoRoute(
-                          path: 'documents',
-                          name: 'documents',
+                          parentNavigatorKey: _officeNavigatorKey,
+                          path: 'documents_details',
+                          name: 'documents_details',
                           onExit: (context, state) async {
                             log('dreamly popped');
 
                             return true;
                           },
-                          builder: (context, state) => const DocumentsPage(),
-                          routes: [
-                            GoRoute(
-                              parentNavigatorKey: _officeNavigatorKey,
-                              path: 'documents_details',
-                              name: 'documents_details',
-                              onExit: (context, state) async {
-                                log('dreamly popped');
-
-                                return true;
-                              },
-                              builder: (context, state) =>
-                                  const DocumentsDetailsPage(),
-                            ),
-                          ],
+                          builder: (context, state) => const DocumentsDetailsPage(),
                         ),
                       ],
                     ),
-                    StatefulShellBranch(
-                      observers: [MyNavObserver()],
-                      routes: [
-                        GoRoute(
-                          path: 'tasks',
-                          name: 'tasks',
-                          onExit: (context, state) async {
-                            log('dreamly popped');
+                  ],
+                ),
+                StatefulShellBranch(
+                  observers: [MyNavObserver()],
+                  routes: [
+                    GoRoute(
+                        path: '/office/tasks',
+                        name: 'tasks',
+                        onExit: (context, state) async {
+                          log('dreamly popped');
 
-                            return true;
-                          },
-                          builder: (context, state) => const TasksPage(),
-                        ),
-                      ],
-                    ),
+                          return true;
+                        },
+                        builder: (context, state) => const TasksPage(),
+                        routes: [
+                          GoRoute(
+                            parentNavigatorKey: _officeNavigatorKey,
+                            path: 'task_details',
+                            name: 'task_details',
+                            onExit: (context, state) async {
+                              log('dreamly popped');
+
+                              return true;
+                            },
+                            builder: (context, state) => const DocumentsDetailsPage(),
+                          ),
+                        ]),
                   ],
                 ),
               ],

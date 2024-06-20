@@ -1,60 +1,80 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigation_experimental/screens/office/documents_page.dart';
 import 'package:navigation_experimental/screens/office/tasks_page.dart';
 import 'package:navigation_experimental/widgets/sliver_tab_bar.dart';
 
-class OfficePage extends StatelessWidget {
-  final StatefulNavigationShell officeNavigationShell;
+class OfficePage extends StatefulWidget {
+  final StatefulNavigationShell navigationShell;
   final List<Widget> children;
 
   const OfficePage({
     super.key,
-    required this.officeNavigationShell,
+    required this.navigationShell,
     required this.children,
   });
 
   @override
+  State<OfficePage> createState() => _OfficePageState();
+}
+
+class _OfficePageState extends State<OfficePage> with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.navigationShell.currentIndex,
+    )..addListener(() {
+        if (!_tabController.indexIsChanging) {
+          if (_tabController.index != widget.navigationShell.currentIndex) {
+            widget.navigationShell.goBranch(
+              _tabController.index,
+              initialLocation: _tabController.index == widget.navigationShell.currentIndex,
+            );
+          }
+        }
+      });
+  }
+
+  @override
+  void didUpdateWidget(covariant OfficePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_tabController.indexIsChanging) {
+      if (widget.navigationShell.currentIndex != _tabController.index) {
+        _tabController.animateTo(widget.navigationShell.currentIndex);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-    return DefaultTabController(
-      length: children.length,
-      initialIndex: officeNavigationShell.currentIndex,
-      child: Builder(
-        builder: (context) {
-          final tabController = DefaultTabController.of(context);
-
-          tabController.index = officeNavigationShell.currentIndex;
-
-          tabController.addListener(() {
-            if (tabController.previousIndex != tabController.index) {
-              officeNavigationShell.goBranch(
-                tabController.index,
-                initialLocation: tabController.index == officeNavigationShell.currentIndex,
-              );
-            }
-          });
-
-          return NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-              SliverTabBar(tabs: const [
-                Tab(text: 'Documents'),
-                Tab(text: 'Tasks'),
-              ], controller: tabController),
-            ],
-        body: TabBarView(
-          controller: tabController,
-          children: const [
-            // Tab1
-            DocumentsPage(),
-            // Tab 2
-            TasksPage()
-          ],
-        ));
-        },
-      ),
+    return Builder(
+      builder: (context) {
+        return NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverTabBar(
+                    tabs: const [
+                      Tab(text: 'Documents'),
+                      Tab(text: 'Tasks'),
+                    ],
+                    controller: _tabController,
+                  ),
+                ],
+            body: TabBarView(
+              controller: _tabController,
+              children: const [
+                // Tab1
+                DocumentsPage(key: PageStorageKey('documents')),
+                // Tab 2
+                TasksPage(key: PageStorageKey('tasks'))
+              ],
+            ));
+      },
     );
   }
 }
