@@ -15,14 +15,15 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               children: [
                 ElevatedButton(
-                  onPressed: () =>
-                      context.goNamed(detailsScreenRoute, pathParameters: {'id': '500'}),
+                  onPressed: () => context.goNamed(detailsScreenRoute,
+                      pathParameters: {'id': '500'}),
                   child: const Text('Open details'),
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () => context.goNamed(detailsScreenRoute,
-                      pathParameters: {'id': '500'}, queryParameters: {'chat': ''}),
+                      pathParameters: {'id': '500'},
+                      queryParameters: {'chat': ''}),
                   child: const Text('Open details with chat'),
                 ),
                 const SizedBox(height: 8),
@@ -57,8 +58,8 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
-                  onPressed: () => context.go(
-                    '/office/documents',
+                  onPressed: () => context.goNamed(
+                    'documents',
                   ),
                   child: const Text('Go to Office Documents'),
                 ),
