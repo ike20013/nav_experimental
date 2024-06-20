@@ -61,18 +61,6 @@ class _MobileDetailsState extends State<MobileDetails> {
       ),
       backgroundColor: Colors.blue,
     );
-    // showModalBottomSheet(
-    //   context: context,
-    //   builder: (context) {
-    //     return Container(
-    //       height: 200,
-    //       color: Colors.red,
-    //       child: Center(
-    //         child: Text(widget.messageId ?? 'No messages selected'),
-    //       ),
-    //     );
-    //   },
-    // ).whenComplete(() => context.go('/home/details/${widget.id}'));
   }
 
   @override

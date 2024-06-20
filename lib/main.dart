@@ -12,7 +12,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: shellRouter,
-      
+      debugShowCheckedModeBanner: false,
     );
   }
 }

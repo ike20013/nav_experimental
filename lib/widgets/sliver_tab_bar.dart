@@ -25,8 +25,8 @@ class SliverTabBar extends BaseTabBar {
         centerTitle: false,
         titleSpacing: 0,
         toolbarHeight: 42,
-        title: DecoratedBox(
-          decoration: const BoxDecoration(color: Colors.black),
+        title: ClipRRect(
+          borderRadius: BorderRadius.circular(50),
           child: BaseTabBar(
             tabs: tabs,
             controller: controller,
@@ -35,6 +35,7 @@ class SliverTabBar extends BaseTabBar {
             tabAlignment: tabAlignment,
           ),
         ),
+        shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(100)),
       ),
     );
   }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:navigation_experimental/screens/news/dynamic_tab_bar.dart';
 
 class NewsPage extends StatelessWidget {
-  final String? category;
-  const NewsPage({super.key, this.category});
+  final Uri uri;
+  const NewsPage({super.key, required this.uri});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class NewsPage extends StatelessWidget {
         if (snapshot.hasData) {
           return DynamicTabBar(
             categories: snapshot.data!,
-            currentCategory: category,
+            uri: uri,
           );
         }
         return const Center(
@@ -29,6 +29,17 @@ class NewsPage extends StatelessWidget {
   Future<List<String>> getCategories() async {
     await Future.delayed(const Duration(seconds: 1));
 
-    return ['first', 'second', 'third'];
+    return [
+      'first',
+      'second',
+      'third',
+      'fourth',
+      'fifth',
+      'six',
+      'seven',
+      'eight',
+      'nine',
+      'ten',
+    ];
   }
 }

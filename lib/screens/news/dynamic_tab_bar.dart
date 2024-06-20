@@ -6,14 +6,16 @@ mixin DynamicTabsPageMixin<T extends StatefulWidget> on State<T> implements Tick
   late final TabController _tabController;
   late final Map<String, ScrollController> _scrollControllers;
 
+  /// [Uri] path
+  Uri get uri;
+
   /// [Key] for uri path
   String get queryParamKey;
 
-  /// Tabs names list
+  /// [Tabs] list
   List<String> get tabs;
 
-  // Current tab
-  String? get currentTab;
+  String? get currentTab => uri.queryParameters[queryParamKey];
 
   void updateRoutePath(String category);
 
@@ -30,14 +32,7 @@ mixin DynamicTabsPageMixin<T extends StatefulWidget> on State<T> implements Tick
       initialIndex: initCategoryIndex != -1 ? initCategoryIndex : 0,
     )..addListener(() {
         if (!_tabController.indexIsChanging) {
-          /// Парсинг текущих query параметров
-          final uriCategory = GoRouter.of(context)
-              .routeInformationProvider
-              .value
-              .uri
-              .queryParameters[queryParamKey];
-
-          final int index = tabs.indexWhere((c) => c == uriCategory);
+          final int index = tabs.indexWhere((c) => c == currentTab);
 
           /// Если возвращаемся назад на страницу [без query]
           if (index == -1 && _tabController.index == 0) return;
@@ -54,11 +49,7 @@ mixin DynamicTabsPageMixin<T extends StatefulWidget> on State<T> implements Tick
   void didUpdateWidget(covariant T oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!_tabController.indexIsChanging) {
-      /// Парсинг текущих query параметров
-      final uriCategory =
-          GoRouter.of(context).routeInformationProvider.value.uri.queryParameters[queryParamKey];
-
-      final int index = tabs.indexWhere((c) => c == uriCategory);
+      final int index = tabs.indexWhere((c) => c == currentTab);
       // Если есть появились различия в path и индексе таб контроллера, обновляем контроллер
       if (index != _tabController.index) {
         _tabController.animateTo(index != -1 ? index : 0);
@@ -75,11 +66,12 @@ mixin DynamicTabsPageMixin<T extends StatefulWidget> on State<T> implements Tick
 
 class DynamicTabBar extends StatefulWidget {
   final List<String> categories;
-  final String? currentCategory;
+  final Uri uri;
+
   const DynamicTabBar({
     super.key,
     required this.categories,
-    required this.currentCategory,
+    required this.uri,
   });
 
   @override
@@ -93,15 +85,14 @@ class _DynamicTabBarState extends State<DynamicTabBar>
     return Scaffold(
         body: NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) => [
-        SliverAppBar(
-          pinned: true,
-          toolbarHeight: 30,
-          title:
-              SafeArea(child: Text('${GoRouter.of(context).routeInformationProvider.value.uri}')),
-        ),
-        SliverTabBar(
-          controller: _tabController,
-          tabs: widget.categories.map((c) => Tab(text: c)).toList(),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: SliverTabBar(
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            controller: _tabController,
+            tabs: widget.categories.map((c) => Tab(text: c)).toList(),
+          ),
         ),
       ],
       body: TabBarView(
@@ -138,10 +129,10 @@ class _DynamicTabBarState extends State<DynamicTabBar>
   }
 
   @override
-  List<String> get tabs => widget.categories;
+  Uri get uri => widget.uri;
 
   @override
-  String? get currentTab => widget.currentCategory;
+  List<String> get tabs => widget.categories;
 
   @override
   String get queryParamKey => 'category';

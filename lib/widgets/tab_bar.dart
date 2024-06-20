@@ -21,15 +21,14 @@ class BaseTabBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 1),
-      child: SizedBox(
-        height: 36,
-        child: Material(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(50),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 1),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 1),
+        child: SizedBox(
+          height: 36,
+          child: Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(50),
             child: TabBar(
               splashFactory: InkRipple.splashFactory,
               // overlayColor: WidgetStatePropertyAll(context.shades.tp8),

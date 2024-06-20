@@ -43,9 +43,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
-                  onPressed: () => context.goNamed(
-                    'library_details',
-                  ),
+                  onPressed: () => context.goNamed('library_details'),
                   child: const Text('Go to library Details'),
                 ),
                 const SizedBox(height: 8),
@@ -57,23 +55,17 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
-                  onPressed: () => context.go(
-                    '/office/documents',
-                  ),
+                  onPressed: () => context.push('/office/documents'),
                   child: const Text('Go to Office Documents'),
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
-                  onPressed: () => context.goNamed(
-                    'documents_details',
-                  ),
+                  onPressed: () => context.goNamed('documents_details'),
                   child: const Text('Go to Office Documents Details'),
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
-                  onPressed: () => context.goNamed(
-                    'tasks',
-                  ),
+                  onPressed: () => context.goNamed('tasks'),
                   child: const Text('Go to Office Tasks'),
                 ),
               ],

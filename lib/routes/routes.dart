@@ -176,8 +176,8 @@ final shellRouter = GoRouter(
               name: 'categoriedNews',
               builder: (context, state) {
                 final category = state.uri.queryParameters['category'];
-
-                return NewsPage(category: category);
+                log('${state.uri}');
+                return NewsPage(uri: state.uri);
               },
               routes: [
                 GoRoute(
