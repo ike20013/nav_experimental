@@ -4,6 +4,46 @@ import 'package:navigation_experimental/screens/office/documents_page.dart';
 import 'package:navigation_experimental/screens/office/tasks_page.dart';
 import 'package:navigation_experimental/widgets/sliver_tab_bar.dart';
 
+mixin StaticTabsPageMixin<T extends StatefulWidget> on State<T> implements TickerProvider {
+  late final TabController _tabController;
+
+  TabController get tabController => _tabController;
+
+  int get currentIndex;
+
+  void goBranch(int index, {bool initialLocation});
+
+  @override
+  void initState() {
+    super.initState();
+
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: currentIndex,
+    )..addListener(() {
+        if (!_tabController.indexIsChanging) {
+          if (_tabController.index != currentIndex) {
+            goBranch(
+              _tabController.index,
+              initialLocation: _tabController.index == currentIndex,
+            );
+          }
+        }
+      });
+  }
+
+  @override
+  void didUpdateWidget(covariant T oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_tabController.indexIsChanging) {
+      if (currentIndex != _tabController.index) {
+        _tabController.animateTo(currentIndex);
+      }
+    }
+  }
+}
+
 class OfficePage extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
   final List<Widget> children;
@@ -18,39 +58,8 @@ class OfficePage extends StatefulWidget {
   State<OfficePage> createState() => _OfficePageState();
 }
 
-class _OfficePageState extends State<OfficePage> with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _tabController = TabController(
-      length: 2,
-      vsync: this,
-      initialIndex: widget.navigationShell.currentIndex,
-    )..addListener(() {
-        if (!_tabController.indexIsChanging) {
-          if (_tabController.index != widget.navigationShell.currentIndex) {
-            widget.navigationShell.goBranch(
-              _tabController.index,
-              initialLocation: _tabController.index == widget.navigationShell.currentIndex,
-            );
-          }
-        }
-      });
-  }
-
-  @override
-  void didUpdateWidget(covariant OfficePage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!_tabController.indexIsChanging) {
-      if (widget.navigationShell.currentIndex != _tabController.index) {
-        _tabController.animateTo(widget.navigationShell.currentIndex);
-      }
-    }
-  }
-
+class _OfficePageState extends State<OfficePage>
+    with SingleTickerProviderStateMixin, StaticTabsPageMixin<OfficePage> {
   @override
   Widget build(BuildContext context) {
     return Builder(
@@ -77,84 +86,12 @@ class _OfficePageState extends State<OfficePage> with SingleTickerProviderStateM
       },
     );
   }
+
+  @override
+  int get currentIndex => widget.navigationShell.currentIndex;
+
+  @override
+  void goBranch(int index, {bool initialLocation = false}) {
+    widget.navigationShell.goBranch(index, initialLocation: initialLocation);
+  }
 }
-
-// class OfficePage extends StatefulWidget {
-//   const OfficePage({super.key});
-
-//   @override
-//   State<OfficePage> createState() => _OfficePageState();
-// }
-
-// class _OfficePageState extends State<OfficePage> with SingleTickerProviderStateMixin {
-//   late final TabController _tabController;
-
-//   late final Map<String, ScrollController> _scrollControllers;
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     _scrollControllers = {};
-//     const int initCategory = 0;
-
-//     if (initCategory == -1) {
-//       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) {});
-//     }
-
-//     _tabController = TabController(
-//       length: 2,
-//       vsync: this,
-//       initialIndex: initCategory != -1 ? initCategory : 0,
-//     )..addListener(() {
-//         if (!_tabController.indexIsChanging) {
-//           log('${_tabController.index}');
-
-//           final uriCategory =
-//               GoRouter.of(context).routeInformationProvider.value.uri.queryParameters['category'];
-
-//           // final int index = widget.categories.indexWhere((c) => c == uriCategory);
-
-//           // if (index != _tabController.index) {
-//           //   _goRouterUpdateCategory(widget.categories[_tabController.index]);
-//           // }
-//         }
-//       });
-//   }
-
-//   @override
-//   void didUpdateWidget(covariant OfficePage oldWidget) {
-//     super.didUpdateWidget(oldWidget);
-//     if (!_tabController.indexIsChanging) {
-//       final uriCategory =
-//           GoRouter.of(context).routeInformationProvider.value.uri.queryParameters['category'];
-
-//       // final int index = widget.categories.indexWhere((c) => c == uriCategory);
-
-//       // if (index != -1 && index != _tabController.index) {
-//       //   log('update');
-//       //   _tabController.animateTo(index);
-//       // }
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-    // return NestedScrollView(
-    //     headerSliverBuilder: (context, innerBoxIsScrolled) => [
-    //           SliverTabBar(tabs: const [
-    //             Tab(text: 'Documents'),
-    //             Tab(text: 'Tasks'),
-    //           ], controller: _tabController),
-    //         ],
-    //     body: TabBarView(
-    //       controller: _tabController,
-    //       children: const [
-    //         // Tab1
-    //         DocumentsPage(),
-    //         // Tab 2
-    //         TasksPage()
-    //       ],
-    //     ));
-//   }
-// }
