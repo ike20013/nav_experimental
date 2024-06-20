@@ -55,7 +55,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
-                  onPressed: () => context.push('/office/documents'),
+                  onPressed: () => context.goNamed('documents'),
                   child: const Text('Go to Office Documents'),
                 ),
                 const SizedBox(height: 8),
