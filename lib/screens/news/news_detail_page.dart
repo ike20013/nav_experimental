@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class NewsDetailPage extends StatelessWidget {
   final String newsId;
@@ -12,7 +13,15 @@ class NewsDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: Text(newsId),
+        child: Column(
+          children: [
+            Text(newsId),
+            ElevatedButton(
+              onPressed: () => context.pushNamed('documents_details', queryParameters: {'category': 'second'},),
+              child: const Text('DetailsDoucments'),
+            )
+          ],
+        ),
       ),
     );
   }

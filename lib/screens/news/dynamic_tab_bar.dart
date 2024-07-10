@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigation_experimental/widgets/sliver_tab_bar.dart';
 
-mixin DynamicTabsPageMixin<T extends StatefulWidget> on State<T> implements TickerProvider {
+mixin DynamicTabsPageMixin<T extends StatefulWidget> on State<T>
+    implements TickerProvider {
   late final TabController _tabController;
   late final Map<String, ScrollController> _scrollControllers;
 
@@ -22,7 +23,8 @@ mixin DynamicTabsPageMixin<T extends StatefulWidget> on State<T> implements Tick
     super.initState();
 
     _scrollControllers = {};
-    final int initCategoryIndex = tabs.indexWhere((category) => category == currentTab);
+    final int initCategoryIndex =
+        tabs.indexWhere((category) => category == currentTab);
 
     _tabController = TabController(
       length: tabs.length,
@@ -55,8 +57,11 @@ mixin DynamicTabsPageMixin<T extends StatefulWidget> on State<T> implements Tick
     super.didUpdateWidget(oldWidget);
     if (!_tabController.indexIsChanging) {
       /// Парсинг текущих query параметров
-      final uriCategory =
-          GoRouter.of(context).routeInformationProvider.value.uri.queryParameters[queryParamKey];
+      final uriCategory = GoRouter.of(context)
+          .routeInformationProvider
+          .value
+          .uri
+          .queryParameters[queryParamKey];
 
       final int index = tabs.indexWhere((c) => c == uriCategory);
       // Если есть появились различия в path и индексе таб контроллера, обновляем контроллер
@@ -89,6 +94,12 @@ class DynamicTabBar extends StatefulWidget {
 class _DynamicTabBarState extends State<DynamicTabBar>
     with SingleTickerProviderStateMixin, DynamicTabsPageMixin<DynamicTabBar> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: NestedScrollView(
@@ -96,8 +107,9 @@ class _DynamicTabBarState extends State<DynamicTabBar>
         SliverAppBar(
           pinned: true,
           toolbarHeight: 30,
-          title:
-              SafeArea(child: Text('${GoRouter.of(context).routeInformationProvider.value.uri}')),
+          title: SafeArea(
+              child: Text(
+                  '${GoRouter.of(context).routeInformationProvider.value.uri}')),
         ),
         SliverTabBar(
           controller: _tabController,
@@ -116,17 +128,22 @@ class _DynamicTabBarState extends State<DynamicTabBar>
                     controller: _scrollControllers[category],
                     slivers: [
                       SliverOverlapInjector(
-                          handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+                          handle:
+                              NestedScrollView.sliverOverlapAbsorberHandleFor(
+                                  context)),
                       SliverPadding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         sliver: SliverList.separated(
                           itemBuilder: (context, index) => GestureDetector(
-                              onTap: () => context.goNamed('newsDetail',
-                                  pathParameters: {'id': '$index'},
-                                  queryParameters: {'category': category}),
+                              onTap: () => context.pushNamed(
+                                    'newsDetail',
+                                    pathParameters: {'id': '$index'},
+                                    queryParameters: {'category': category},
+                                  ),
                               child: Text('Item $index')),
                           itemCount: 100,
-                          separatorBuilder: (context, index) => const SizedBox(height: 8),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 8),
                         ),
                       ),
                     ]);
